@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحان التفكير الإبداعي والعلمي - MCQ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #d9e2f0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+            max-width: 850px;
+            width: 100%;
+            padding: 30px;
+            transition: 0.3s;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eef2f7;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        header h1 {
+            font-size: 22px;
+            color: #1a2b4c;
+        }
+        #progress {
+            background: #1a2b4c;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .question-area {
+            margin-bottom: 15px;
+        }
+        #qText {
+            font-size: 21px;
+            font-weight: 600;
+            color: #0b1a33;
+            line-height: 1.6;
+            direction: ltr;
+            text-align: left;
+        }
+        #qText .star {
+            color: #f1c40f;
+            margin-left: 8px;
+        }
+        #qText .extra {
+            color: #3498db;
+            margin-left: 8px;
+            font-size: 18px;
+        }
+        #optionsContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0 15px;
+        }
+        .opt {
+            background: #f8faff;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 16px 20px;
+            font-size: 17px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #1a2b4c;
+            font-weight: 500;
+            direction: ltr;
+        }
+        .opt:hover:not(.disabled-opt) {
+            background: #edf3ff;
+            border-color: #4a6cf7;
+            transform: translateY(-2px);
+        }
+        .opt.correct {
+            background: #e6f9ed;
+            border-color: #1db954;
+            color: #0d6e33;
+        }
+        .opt.wrong {
+            background: #ffe9ea;
+            border-color: #e74c3c;
+            color: #a93226;
+        }
+        .opt.disabled-opt {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .feedback-area {
+            min-height: 60px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 10px 0 15px;
+            background: #f1f4f9;
+            color: #1a2b4c;
+            text-align: center;
+        }
+        .feedback-area.correct-fb {
+            background: #e6f9ed;
+            color: #0d6e33;
+        }
+        .feedback-area.wrong-fb {
+            background: #ffe9ea;
+            color: #a93226;
+        }
+
+        /* صندوق الترجمة (يظهر بعد الإجابة فقط - بالعربي) */
+        #translationBox {
+            background: #fef9e7;
+            border: 2px solid #f1c40f;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 15px 0 10px;
+            display: none;
+            direction: rtl;
+            text-align: right;
+        }
+        #translationBox .ar-q {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a2b4c;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #bdc3c7;
+            padding-bottom: 8px;
+        }
+        #translationBox .ar-opt {
+            font-size: 16px;
+            color: #2c3e50;
+            padding: 4px 0;
+        }
+        #translationBox .ar-opt span {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        #translationBox .ar-opt.correct-ar {
+            color: #1db954;
+        }
+        #translationBox .ar-opt.wrong-ar {
+            color: #e74c3c;
+        }
+        .trans-label {
+            display: inline-block;
+            background: #f1c40f;
+            color: #1a2b4c;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .next-btn {
+            background: #1a2b4c;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 14px 28px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .next-btn:hover:not(:disabled) {
+            background: #0f1e38;
+            transform: scale(1.02);
+        }
+        .next-btn:disabled {
+            background: #b0c0d0;
+            cursor: not-allowed;
+            opacity: 0.5;
+            transform: none;
+        }
+        #resultBox {
+            text-align: center;
+            padding: 30px 10px;
+        }
+        #resultBox h2 {
+            font-size: 30px;
+            color: #1a2b4c;
+        }
+        #resultBox .score {
+            font-size: 48px;
+            font-weight: 800;
+            color: #4a6cf7;
+            margin: 20px 0;
+        }
+        #resultBox .msg {
+            font-size: 20px;
+            color: #2c3e50;
+        }
+        .restart-btn {
+            background: #4a6cf7;
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .restart-btn:hover {
+            background: #3459d6;
+            transform: scale(1.05);
+        }
+        @media (max-width: 600px) {
+            .container { padding: 18px; }
+            header h1 { font-size: 18px; }
+            #qText { font-size: 18px; }
+            .opt { font-size: 15px; padding: 13px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <header>
+        <h1>🧠 التفكير الإبداعي والعلمي</h1>
+        <span id="progress">1 / 70</span>
+    </header>
+
+    <div id="quizArea">
+        <div class="question-area">
+            <div id="qText">السؤال هنا</div>
+        </div>
+        <div id="optionsContainer"></div>
+        <div id="feedbackArea" class="feedback-area">✍️ Choose an answer from above</div>
+
+        <!-- صندوق الترجمة -->
+        <div id="translationBox">
+            <div class="trans-label">🌐 الترجمة إلى العربية</div>
+            <div class="ar-q" id="arQuestion">[السؤال بالعربي هنا]</div>
+            <div id="arOptionsList"></div>
+        </div>
+
+        <button id="nextBtn" class="next-btn" disabled>Next ➡️</button>
+    </div>
+
+    <div id="resultBox" style="display: none;">
+        <h2>🏁 Exam Finished!</h2>
+        <div class="score" id="finalScore">0 / 70</div>
+        <div class="msg" id="finalMsg">Well done!</div>
+        <button class="restart-btn" onclick="restartExam()">🔄 Restart Exam</button>
+    </div>
+</div>
+
+<script>
+    // ================================================================
+    //  70 سؤالاً (55 من الشيتات الأصلية ⭐، و15 إضافية 📝)
+    // ================================================================
+    const questions = [
+        // ========== الأسئلة 1-22: من محاضرة 1 (د. مروى) ==========
+        { id:1, ar:"التفكير هو:", optsAr:["مجرد حفظ المعلومات","عملية عقلية معقدة تستخدم لفهم وتحليل وتقييم وإنشاء","قراءة الكتب بسرعة","كتابة برامج الكمبيوتر"], en:"What is thinking?", optsEn:["Memorizing information only","A complex mental process used to understand, analyze, evaluate, and create","Reading books quickly","Writing computer programs"], correct:1, isOriginal:true },
+        { id:2, ar:"الفهم يعني:", optsAr:["إنشاء أفكار جديدة","تقسيم المشكلة إلى أجزاء أصغر","استيعاب المعلومات ومعناها","اختيار أفضل حل"], en:"Understanding means:", optsEn:["Creating new ideas","Breaking a problem into smaller parts","Comprehending information and its meaning","Choosing the best solution"], correct:2, isOriginal:true },
+        { id:3, ar:"التحليل يعني:", optsAr:["حفظ الحقائق","تقسيم المشكلة إلى أجزاء أصغر","تجاهل التفاصيل غير الضرورية","تخمين الحل"], en:"Analyzing means:", optsEn:["Memorizing facts","Breaking a problem into smaller parts","Ignoring unnecessary details","Guessing the solution"], correct:1, isOriginal:true },
+        { id:4, ar:"التقييم يشمل:", optsAr:["إنشاء تطبيق جديد","الحكم على جودة الأفكار أو الحلول","جمع البيانات","كتابة الكود"], en:"Evaluating involves:", optsEn:["Creating a new application","Judging the quality of ideas or solutions","Collecting data","Writing code"], correct:1, isOriginal:true },
+        { id:5, ar:"الإبداع (الإنشاء) يشير إلى:", optsAr:["حفظ المفاهيم","توليد أفكار جديدة ومفيدة","تكرار الحلول السابقة","قراءة الوثائق"], en:"Creating refers to:", optsEn:["Memorizing concepts","Generating new and useful ideas","Repeating previous solutions","Reading documentation"], correct:1, isOriginal:true },
+        { id:6, ar:"الاستدلال المنطقي يُستخدم من أجل:", optsAr:["استخلاص النتائج من الحقائق والأدلة","إنشاء الرسومات","كتابة التقارير","حفظ المعلومات"], en:"Logical reasoning is used to:", optsEn:["Draw conclusions from facts and evidence","Create graphics","Write reports","Memorize information"], correct:0, isOriginal:true },
+        { id:7, ar:"أي نشاط يتضمن التعرف على المشكلة وإيجاد حلها؟", optsAr:["اتخاذ القرار","تحديد المشكلة وحلها","تخزين البيانات","البرمجة"], en:"Which activity involves recognizing a problem and finding its solution?", optsEn:["Decision making","Problem identification and resolution","Data storage","Programming"], correct:1, isOriginal:true },
+        { id:8, ar:"اتخاذ القرار هو عملية:", optsAr:["إنشاء برمجيات جديدة","اختيار أفضل خيار من بين البدائل","حفظ المعلومات","جمع متطلبات المستخدم"], en:"Decision making is the process of:", optsEn:["Creating new software","Choosing the best option among alternatives","Memorizing information","Collecting user requirements"], correct:1, isOriginal:true },
+        { id:9, ar:"أي من التالي يعتبر قيداً شائعاً أثناء اتخاذ القرار؟", optsAr:["الميزانية","الوقت","الموارد","كل ما سبق"], en:"Which is a common constraint during decision making?", optsEn:["Budget","Time","Resources","All of the above"], correct:3, isOriginal:true },
+        { id:10, ar:"في علم الحاسوب، تصميم الخوارزميات يعني:", optsAr:["اختبار الأجهزة","إنشاء حلول خطوة بخطوة للمشكلات","تثبيت البرامج","إدارة قواعد البيانات"], en:"In Computer Science, algorithm design means:", optsEn:["Testing hardware","Creating step-by-step solutions to problems","Installing software","Managing databases"], correct:1, isOriginal:true },
+        { id:11, ar:"تحليل النظم يركز على:", optsAr:["لعب ألعاب الكمبيوتر","فهم مكونات النظام وتفاعلاتها","تصميم مواقع الويب فقط","تثبيت أنظمة التشغيل"], en:"System analysis focuses on:", optsEn:["Playing computer games","Understanding system components and interactions","Designing websites only","Installing operating systems"], correct:1, isOriginal:true },
+        { id:12, ar:"التصحيح (Debugging) هو عملية:", optsAr:["تصميم الواجهات","العثور على أخطاء البرمجيات وإصلاحها","إنشاء قواعد البيانات","تثبيت التطبيقات"], en:"Debugging is the process of:", optsEn:["Designing interfaces","Finding and fixing software errors","Creating databases","Installing applications"], correct:1, isOriginal:true },
+        { id:13, ar:"التحسين (Optimization) يهدف إلى:", optsAr:["زيادة عدد الأخطاء","تحسين أداء النظام","حذف البيانات","إبطاء البرنامج"], en:"Optimization aims to:", optsEn:["Increase the number of errors","Improve system performance","Delete data","Slow down the program"], correct:1, isOriginal:true },
+        { id:14, ar:"التفكير الإبداعي هو القدرة على:", optsAr:["حفظ المعلومات","توليد أفكار جديدة وأصلية ومفيدة","تكرار الحلول الموجودة","تجنب حل المشكلات"], en:"Creative thinking is the ability to:", optsEn:["Memorize information","Generate new, original, and useful ideas","Repeat existing solutions","Avoid solving problems"], correct:1, isOriginal:true },
+        { id:15, ar:"أي خاصية من خصائص التفكير الإبداعي تشير إلى إنتاج أفكار فريدة؟", optsAr:["المرونة","المخاطرة","الأصالة","الملاحظة"], en:"Which characteristic of creative thinking refers to producing unique ideas?", optsEn:["Flexibility","Risk-taking","Originality","Observation"], correct:2, isOriginal:true },
+        { id:16, ar:"المرونة (Flexibility) تعني:", optsAr:["تجنب التغيير","النظر إلى المشكلات من وجهات نظر مختلفة","حفظ الحلول","اتباع طريقة واحدة فقط"], en:"Flexibility means:", optsEn:["Avoiding change","Looking at problems from different perspectives","Memorizing solutions","Following one method only"], correct:1, isOriginal:true },
+        { id:17, ar:"المخاطرة في التفكير الإبداعي تعني:", optsAr:["تجاهل المشكلات","تجربة أفكار غير تقليدية","تجنب الحلول الجديدة","اتباع الطرق التقليدية فقط"], en:"Risk-taking in creative thinking means:", optsEn:["Ignoring problems","Trying unconventional ideas","Avoiding new solutions","Following traditional methods only"], correct:1, isOriginal:true },
+        { id:18, ar:"التفكير الإبداعي يساعد علماء الحاسوب على:", optsAr:["تطوير تطبيقات مبتكرة","تحسين تجربة المستخدم","تصميم خوارزميات أفضل","كل ما سبق"], en:"Creative thinking helps computer scientists:", optsEn:["Develop innovative applications","Improve user experience","Design better algorithms","All of the above"], correct:3, isOriginal:true },
+        { id:19, ar:"الواجهة سهلة الاستخدام (User-friendly) يجب أن تكون:", optsAr:["معقدة","صعبة التنقل","بسيطة وبديهية","باهظة الثمن"], en:"A user-friendly interface should be:", optsEn:["Complex","Difficult to navigate","Simple and intuitive","Expensive"], correct:2, isOriginal:true },
+        { id:20, ar:"التفكير العلمي هو:", optsAr:["نهج عشوائي","نهج منهجي ومنطقي","قائم على الآراء الشخصية","قائم على التخمين"], en:"Scientific thinking is:", optsEn:["A random approach","A systematic and logical approach","Based on personal opinions","Based on guessing"], correct:1, isOriginal:true },
+        { id:21, ar:"الاستدلال المنطقي في التفكير العلمي يعتمد على:", optsAr:["العواطف","الآراء الشخصية","الحقائق والأدلة","الحظ"], en:"Logical reasoning in scientific thinking relies on:", optsEn:["Emotions","Personal opinions","Facts and evidence","Luck"], correct:2, isOriginal:true },
+        { id:22, ar:"التفكير الإبداعي بشكل أساسي:", optsAr:["يولد أفكارًا جديدة","يختبر الأفكار باستخدام الأدلة","يحذف الأفكار الخاطئة","يقيس الأداء"], en:"Creative thinking mainly:", optsEn:["Generates new ideas","Tests ideas using evidence","Deletes incorrect ideas","Measures performance"], correct:0, isOriginal:true },
+
+        // ========== الأسئلة 23-40: من محاضرة 2 (د. مروى) ==========
+        { id:23, ar:"الذكاء هو القدرة على:", optsAr:["حفظ الحقائق فقط","التعلم والاستدلال وحل المشكلات والتكيف مع المواقف الجديدة","استخدام أجهزة الكمبيوتر بكفاءة","القراءة بسرعة"], en:"Intelligence is the ability to:", optsEn:["Memorize only facts","Learn, reason, solve problems, and adapt to new situations","Use computers efficiently","Read quickly"], correct:1, isOriginal:true },
+        { id:24, ar:"التفكير الإبداعي يعتمد على الذكاء لأنه يساعد الناس على:", optsAr:["حفظ الإجابات فقط","تحليل المشكلات وتوليد الأفكار","تجنب اتخاذ القرارات","نسخ الحلول الموجودة"], en:"Creative thinking depends on intelligence because it helps people to:", optsEn:["Memorize answers only","Analyze problems and generate ideas","Avoid making decisions","Copy existing solutions"], correct:1, isOriginal:true },
+        { id:25, ar:"أي معادلة تمثل الابتكار (Innovation) بشكل أفضل؟", optsAr:["المعرفة + الخبرة = الذكاء","الذكاء + الذاكرة = التعلم","المعرفة + الذكاء + الإبداع = الابتكار","الإبداع + الذكاء الاصطناعي = الذكاء"], en:"Which equation best represents innovation?", optsEn:["Knowledge + Experience = Intelligence","Intelligence + Memory = Learning","Knowledge + Intelligence + Creativity = Innovation","Creativity + AI = Intelligence"], correct:2, isOriginal:true },
+        { id:26, ar:"التعلم الآلي (Machine Learning) هو:", optsAr:["لغة برمجة","فرع من فروع الذكاء الاصطناعي","نظام قواعد بيانات","شبكة كمبيوتر"], en:"Machine Learning is:", optsEn:["A programming language","A branch of Artificial Intelligence","A database system","A computer network"], correct:1, isOriginal:true },
+        { id:27, ar:"أنظمة التعلم الآلي تتحسن عن طريق:", optsAr:["إعادة تشغيل الكمبيوتر","التعلم من البيانات","زيادة ذاكرة الوصول العشوائي (RAM)","تثبيت البرامج"], en:"Machine Learning systems improve by:", optsEn:["Restarting the computer","Learning from data","Increasing RAM","Installing software"], correct:1, isOriginal:true },
+        { id:28, ar:"الذكاء الاصطناعي يُستخدم بشكل شائع في:", optsAr:["الرعاية الصحية","الأمن السيبراني","التعليم","كل ما سبق"], en:"Artificial Intelligence is commonly used in:", optsEn:["Healthcare","Cybersecurity","Education","All of the above"], correct:3, isOriginal:true },
+        { id:29, ar:"أي نوع من الذكاء هو الأكثر أهمية لتصميم الخوارزميات؟", optsAr:["الذكاء الموسيقي","الذكاء المنطقي","الذكاء المكاني","الذكاء العاطفي"], en:"Which type of intelligence is most important for algorithm design?", optsEn:["Musical Intelligence","Logical Intelligence","Spatial Intelligence","Emotional Intelligence"], correct:1, isOriginal:true },
+        { id:30, ar:"الذكاء الاصطناعي يمكن الآلات من:", optsAr:["التعلم واتخاذ القرارات","الشعور بالمشاعر","نسيان المعلومات","لا شيء مما سبق"], en:"Artificial Intelligence enables machines to:", optsEn:["Learn and make decisions","Feel emotions","Forget information","None of the above"], correct:0, isOriginal:true },
+        { id:31, ar:"التفكير هو:", optsAr:["برنامج كمبيوتر","العملية العقلية النشطة التي يتم من خلالها التعبير عن الذكاء","لغة برمجة","جهاز ذاكرة"], en:"Thinking is:", optsEn:["A computer program","The active mental process through which intelligence is expressed","A programming language","A memory device"], correct:1, isOriginal:true },
+        { id:32, ar:"العمليات المعرفية (Cognitive processes) تسمح للبشر بـ:", optsAr:["اكتساب المعلومات واستخدامها","بناء أجهزة الكمبيوتر","تصنيع المعالجات","إصلاح الأجهزة"], en:"Cognitive processes allow humans to:", optsEn:["Acquire and use information","Build computers","Manufacture processors","Repair hardware"], correct:0, isOriginal:true },
+        { id:33, ar:"الإدراك (Perception) هو عملية:", optsAr:["كتابة الكود","تفسير المعلومات الحسية","تثبيت البرامج","حفظ الملفات"], en:"Perception is the process of:", optsEn:["Writing code","Interpreting sensory information","Installing software","Saving files"], correct:1, isOriginal:true },
+        { id:34, ar:"أي مجال في الحوسبة يعتمد بشكل كبير على الإدراك (Perception)؟", optsAr:["تصميم واجهة المستخدم","تصنيع وحدات المعالجة المركزية","شبكات الكمبيوتر","تخزين البيانات"], en:"Which computing area depends heavily on perception?", optsEn:["User Interface Design","CPU Manufacturing","Computer Networking","Data Storage"], correct:0, isOriginal:true },
+        { id:35, ar:"يلاحظ المبرمج رسالة خطأ حمراء في بيئة التطوير (IDE). هذا مثال على:", optsAr:["الذاكرة","التعلم","الإدراك","الابتكار"], en:"A programmer notices a red error message in the IDE. This is an example of:", optsEn:["Memory","Learning","Perception","Innovation"], correct:2, isOriginal:true },
+        { id:36, ar:"أي نوع من الذاكرة يخزن المعلومات لفترة طويلة؟", optsAr:["الذاكرة قصيرة المدى","ذاكرة العمل","الذاكرة طويلة المدى","ذاكرة التخزين المؤقت (Cache)"], en:"Which type of memory stores information for a long time?", optsEn:["Short-term Memory","Working Memory","Long-term Memory","Cache Memory"], correct:2, isOriginal:true },
+        { id:37, ar:"تذكر خطأ المترجم (Compiler error) أثناء إصلاح الكود يستخدم:", optsAr:["الذاكرة طويلة المدى","ذاكرة العمل","الذاكرة قصيرة المدى","ذاكرة الذكاء الاصطناعي"], en:"Remembering a compiler error while fixing code uses:", optsEn:["Long-term Memory","Working Memory","Short-term Memory","AI Memory"], correct:2, isOriginal:true },
+        { id:38, ar:"تتبع قيم المتغيرات أثناء تشغيل البرنامج خطوة بخطوة يستخدم:", optsAr:["ذاكرة العمل (Working Memory)","الذاكرة طويلة المدى","الذكاء العاطفي","الإدراك"], en:"Tracing variable values while running a program uses:", optsEn:["Working Memory","Long-term Memory","Emotional Intelligence","Perception"], correct:0, isOriginal:true },
+        { id:39, ar:"التعلم (Learning) هو عملية:", optsAr:["نسيان المعلومات","اكتساب معرفة أو مهارات جديدة","شراء البرامج","تصميم الأجهزة"], en:"Learning is the process of:", optsEn:["Forgetting information","Acquiring new knowledge or skills","Buying software","Designing hardware"], correct:1, isOriginal:true },
+        { id:40, ar:"طالب يقارن بين خوارزميتي Quick Sort و Merge Sort لاختيار الأسرع. أي عملية معرفية تُستخدم بشكل أساسي؟", optsAr:["الإدراك","ذاكرة العمل","الذكاء العاطفي","الذكاء اللغوي"], en:"A student compares Quick Sort and Merge Sort to choose the faster algorithm. Which cognitive process is mainly used?", optsEn:["Perception","Working Memory","Emotional Intelligence","Linguistic Intelligence"], correct:1, isOriginal:true },
+
+        // ========== الأسئلة 41-55: من محاضرة 5 (د. مروى) ==========
+        { id:41, ar:"ما هو الغرض الأساسي من التفكير النقدي (Critical Thinking)؟", optsAr:["حفظ المعلومات","التفكير بوضوح وعقلانية وتقييم المعلومات بموضوعية","تخمين الإجابات بسرعة","اتباع الآراء دون أدلة"], en:"What is the primary purpose of critical thinking?", optsEn:["Memorizing information","Thinking clearly, rationally, and evaluating information objectively","Guessing answers quickly","Following opinions without evidence"], correct:1, isOriginal:true },
+        { id:42, ar:"أي من التالي ليس عنصراً أساسياً في التفكير النقدي؟", optsAr:["التحليل (Analysis)","التقييم (Evaluation)","التفكير (Reflection)","الحفظ (Memorization)"], en:"Which of the following is NOT a key element of critical thinking?", optsEn:["Analysis","Evaluation","Reflection","Memorization"], correct:3, isOriginal:true },
+        { id:43, ar:"لماذا يعتبر التفكير النقدي مهماً في الحوسبة (Computing)؟", optsAr:["لتقليل تكاليف الأجهزة","لضمان موثوقية البرمجيات وتقييم الخوارزميات","للتخلص من لغات البرمجة","لتجنب اختبار البرمجيات"], en:"Why is critical thinking important in computing?", optsEn:["To reduce hardware costs","To ensure software reliability and evaluate algorithms","To eliminate programming languages","To avoid testing software"], correct:1, isOriginal:true },
+        { id:44, ar:"الاستدلال المنطقي (Logical reasoning) هو عملية:", optsAr:["اتخاذ قرارات عشوائية","استخدام التفكير المنظم للوصول إلى استنتاجات صحيحة","حفظ صياغة البرمجة","إنشاء الرسومات"], en:"Logical reasoning is the process of:", optsEn:["Making random decisions","Using structured thinking to reach valid conclusions","Memorizing programming syntax","Creating graphics"], correct:1, isOriginal:true },
+        { id:45, ar:"أي مما يلي يعتمد على الاستدلال المنطقي؟", optsAr:["البرمجة","تصميم الخوارزميات","استعلامات قواعد البيانات","كل ما سبق"], en:"Which of the following relies on logical reasoning?", optsEn:["Programming","Algorithm design","Database queries","All of the above"], correct:3, isOriginal:true },
+        { id:46, ar:"الاستدلال الاستنباطي (Deductive reasoning) يبدأ بـ:", optsAr:["ملاحظات محددة","افتراضات عشوائية","قواعد عامة مطبقة على حالات محددة","نتائج تجريبية فقط"], en:"Deductive reasoning starts with:", optsEn:["Specific observations","Random assumptions","General rules applied to specific cases","Experimental results only"], correct:2, isOriginal:true },
+        { id:47, ar:"الاستدلال الاستقرائي (Inductive reasoning) يعتمد على:", optsAr:["تطبيق القواعد العامة","استخلاص استنتاجات عامة من ملاحظات محددة","تجاهل الأدلة","البراهين الرياضية فقط"], en:"Inductive reasoning is based on:", optsEn:["Applying general rules","Drawing general conclusions from specific observations","Ignoring evidence","Mathematical proofs only"], correct:1, isOriginal:true },
+        { id:48, ar:"أي نوع من الاستدلال يختار التفسير الأكثر احتمالاً لملاحظة معينة؟", optsAr:["الاستنباطي (Deductive)","الاستقرائي (Inductive)","الاستنتاجي (Abductive)","التحليلي (Analytical)"], en:"Which type of reasoning selects the most likely explanation for an observation?", optsEn:["Deductive","Inductive","Abductive","Analytical"], correct:2, isOriginal:true },
+        { id:49, ar:"برنامج يتعطل عندما يكون الإدخال صفراً. افتراض أن السبب هو القسمة على صفر هو مثال على:", optsAr:["الاستدلال الاستنباطي","الاستدلال الاستقرائي","الاستدلال الاستنتاجي (Abductive)","التفكير الإبداعي"], en:"A program crashes whenever the input is zero. Assuming the cause is division by zero is an example of:", optsEn:["Deductive reasoning","Inductive reasoning","Abductive reasoning","Creative thinking"], correct:2, isOriginal:true },
+        { id:50, ar:"الاستدلال المنطقي في الذكاء الاصطناعي يُستخدم بشكل شائع في:", optsAr:["الأنظمة القائمة على القواعد","الأنظمة الخبيرة","تمثيل المعرفة","كل ما سبق"], en:"Logical reasoning in Artificial Intelligence is commonly used in:", optsEn:["Rule-based systems","Expert systems","Knowledge representation","All of the above"], correct:3, isOriginal:true },
+        { id:51, ar:"العصف الذهني (Brainstorming) يهدف بشكل أساسي إلى:", optsAr:["تقييم الأفكار فوراً","توليد عدد كبير من الأفكار","رفض الأفكار غير التقليدية","حل المعادلات الرياضية"], en:"Brainstorming is mainly intended to:", optsEn:["Evaluate ideas immediately","Generate a large number of ideas","Reject unusual ideas","Solve mathematical equations"], correct:1, isOriginal:true },
+        { id:52, ar:"أثناء العصف الذهني، التركيز الرئيسي يكون على:", optsAr:["نقد الأفكار","تقييم الأفكار","توليد الأفكار","ترتيب المشاركين"], en:"During brainstorming, the main focus is on:", optsEn:["Criticizing ideas","Evaluating ideas","Idea generation","Ranking participants"], correct:2, isOriginal:true },
+        { id:53, ar:"أي نوع من العصف الذهني مفيد عندما يكون التركيز العميق مطلوباً؟", optsAr:["العصف الجماعي","العصف التقليدي","العصف الفردي","الكتابة الذهنية (Brain writing)"], en:"Which type of brainstorming is useful when deep focus is required?", optsEn:["Group brainstorming","Traditional brainstorming","Individual brainstorming","Brain writing"], correct:2, isOriginal:true },
+        { id:54, ar:"تم توضيح العصف الذهني الفردي من خلال:", optsAr:["كتابة تقارير المشروع","استكشاف خوارزميات فرز متعددة","تصميم قاعدة بيانات","إنشاء روبوتات محادثة (Chatbots)"], en:"Individual brainstorming was demonstrated by:", optsEn:["Writing project reports","Exploring multiple sorting algorithms","Designing a database","Creating AI chatbots"], correct:1, isOriginal:true },
+        { id:55, ar:"العصف الذهني الجماعي يُستخدم بشكل شائع في:", optsAr:["فرق هندسة البرمجيات","بيئات التطوير الرشيقة (Agile)","مجموعات البحث","كل ما سبق"], en:"Group brainstorming is commonly used in:", optsEn:["Software engineering teams","Agile development environments","Research groups","All of the above"], correct:3, isOriginal:true },
+
+        // ========== الأسئلة 56-70: إضافية من تأليفي (بنفس النمط) ==========
+        { id:56, ar:"وفقاً لنموذج المراحل الأربع للإبداع (Four-Stage Model)، المرحلة التي يتم فيها فهم المشكلة وجمع المعلومات تسمى:", optsAr:["الحضانة (Incubation)","الإعداد (Preparation)","الإلهام (Illumination)","التحقق (Verification)"], en:"According to the Four-Stage Model of Creativity, the stage where the problem is understood and information is gathered is called:", optsEn:["Incubation","Preparation","Illumination","Verification"], correct:1, isOriginal:false },
+        { id:57, ar:"في نموذج حل المشكلات الإبداعي (CPS)، المرحلة التي تتضمن اختبار الفكرة وتحسينها هي:", optsAr:["تحديد المشكلة","توليد الأفكار","تقييم الأفكار","التنفيذ والتحقق"], en:"In the Creative Problem Solving (CPS) model, the stage that involves testing and refining the idea is:", optsEn:["Problem identification","Idea generation","Idea evaluation","Implementation and Verification"], correct:3, isOriginal:false },
+        { id:58, ar:"أي من التالي يعد مثالاً على الإبداع الجماعي (Group Creativity) في هندسة البرمجيات؟", optsAr:["البرمجة الفردية","اجتماعات التطوير الرشيقة (Agile)","تصحيح الأخطاء بشكل منفصل","كتابة التوثيق"], en:"Which of the following is an example of Group Creativity in software engineering?", optsEn:["Individual programming","Agile development meetings","Debugging separately","Writing documentation"], correct:1, isOriginal:false },
+        { id:59, ar:"في الذكاء الاصطناعي، تصميم بنية الشبكة العصبية يعد مثالاً على تطبيق الإبداع في:", optsAr:["تخزين البيانات","تصميم بنية النموذج","اختبار البرمجيات","إدارة الشبكات"], en:"In AI, designing the architecture of a neural network is an example of applying creativity to:", optsEn:["Data storage","Model architecture design","Software testing","Network management"], correct:1, isOriginal:false },
+        { id:60, ar:"القدرة على التعلم والاستدلال والتكيف مع المواقف الجديدة تُعرّف:", optsAr:["التفكير","الإبداع","الذكاء","التحليل"], en:"The ability to learn, reason, and adapt to new situations defines:", optsEn:["Thinking","Creativity","Intelligence","Analysis"], correct:2, isOriginal:false },
+        { id:61, ar:"أي من التالي يمثل تطبيقاً إبداعياً للذكاء الاصطناعي في الحياة الواقعية؟", optsAr:["الآلات الحاسبة البسيطة","السيارات ذاتية القيادة","المفكات الكهربائية","الأقلام الرقاصة"], en:"Which of the following represents a creative real-world application of Artificial Intelligence?", optsEn:["Simple calculators","Self-driving cars","Electric screwdrivers","Pencils"], correct:1, isOriginal:false },
+        { id:62, ar:"في نموذج المراحل الأربع، مرحلة 'الحضانة (Incubation)' تعني:", optsAr:["اختبار الفكرة","السماح للأفكار بالتطور في العقل الباطن","جمع المعلومات","التوصل إلى الفكرة"], en:"In the Four-Stage Model, the 'Incubation' stage means:", optsEn:["Testing the idea","Allowing ideas to develop subconsciously","Gathering information","Reaching the idea"], correct:1, isOriginal:false },
+        { id:63, ar:"الإبداع (Creativity) في علم الحاسوب لا يشمل:", optsAr:["تصميم خوارزميات جديدة","تطوير تطبيقات مبتكرة","تكرار الكود القديم بدون تغيير","إنشاء واجهات سهلة الاستخدام"], en:"Creativity in Computer Science does NOT include:", optsEn:["Designing new algorithms","Developing innovative applications","Repeating old code without change","Creating user-friendly interfaces"], correct:2, isOriginal:false },
+        { id:64, ar:"أي من الخيارات التالية يعتبر مثالاً على الإبداع الفردي في البرمجة؟", optsAr:["العمل ضمن فريق لتطوير لعبة","كتابة دالة بطريقة رياضية مبتكرة لتوفير الوقت","استخدام مكتبات جاهزة فقط","نسخ الكود من الإنترنت"], en:"Which of the following is an example of individual creativity in programming?", optsEn:["Working in a team to develop a game","Writing a function using an innovative mathematical method to save time","Using only ready-made libraries","Copying code from the internet"], correct:1, isOriginal:false },
+        { id:65, ar:"العلاقة بين الذكاء والإبداع هي:", optsAr:["متضادتان تماماً","الإبداع جزء من الذكاء، والذكاء يدعم الإبداع","غير مرتبطتين","الذكاء يمنع الإبداع"], en:"The relationship between intelligence and creativity is:", optsEn:["Completely opposite","Creativity is part of intelligence, and intelligence supports creativity","Unrelated","Intelligence prevents creativity"], correct:1, isOriginal:false },
+        { id:66, ar:"أي من التالي يمثل تحدياً شائعاً في العصف الذهني الجماعي؟", optsAr:["كثرة الأفكار","سيطرة بعض الأعضاء (Dominance)","سرعة توليد الأفكار","التنوع الثقافي"], en:"Which of the following is a common challenge in group brainstorming?", optsEn:["Too many ideas","Dominance of some members","Speed of idea generation","Cultural diversity"], correct:1, isOriginal:false },
+        { id:67, ar:"تقنية 'الكتابة الذهنية (Brainwriting)' تختلف عن العصف التقليدي في:", optsAr:["أنها أسرع","أنها تعتمد على الصور","أن الأعضاء يكتبون أفكارهم أولاً قبل مشاركتها","أنها تستخدم فقط في الرياضيات"], en:"The 'Brainwriting' technique differs from traditional brainstorming in:", optsEn:["It is faster","It relies on images","Members write their ideas first before sharing them","It is used only in mathematics"], correct:2, isOriginal:false },
+        { id:68, ar:"في سياق علم الحاسوب، التفكير النقدي يساعد في:", optsAr:["تجنب كتابة الاختبارات","تقييم كفاءة الخوارزميات بشكل موضوعي","زيادة تعقيد الكود","إطالة وقت التطوير"], en:"In the context of Computer Science, critical thinking helps in:", optsEn:["Avoiding writing tests","Objectively evaluating algorithm efficiency","Increasing code complexity","Lengthening development time"], correct:1, isOriginal:false },
+        { id:69, ar:"الاستدلال الاستقرائي (Inductive) في البرمجة يظهر عند:", optsAr:["تنفيذ قاعدة if-else","ملاحظة أن جميع الأعداد في القائمة زوجية واستنتاج أن القاعدة تنطبق على الكل","تصحيح خطأ بناءً على رسالة خطأ","تحسين سرعة الخوارزمية"], en:"Inductive reasoning in programming appears when:", optsEn:["Executing an if-else rule","Observing that all numbers in a list are even and concluding the rule applies to all","Fixing an error based on an error message","Improving algorithm speed"], correct:1, isOriginal:false },
+        { id:70, ar:"أي من التالي يعكس التآزر (التكامل) بين التفكير الإبداعي والعلمي؟", optsAr:["تجاهل الأدلة لصالح الأفكار الجديدة","توليد فكرة جديدة ثم اختبارها وتحسينها بالأدلة","الاعتماد على التخمين فقط","نسخ حلول الآخرين"], en:"Which of the following reflects the synergy (integration) between creative and scientific thinking?", optsEn:["Ignoring evidence in favor of new ideas","Generating a new idea then testing and refining it with evidence","Relying only on guessing","Copying others' solutions"], correct:1, isOriginal:false }
+    ];
+
+    // ================================================================
+    //  منطق الامتحان
+    // ================================================================
+    let currentIndex = 0;
+    let score = 0;
+    let isAnswered = false;
+    const totalQuestions = questions.length;
+    const quizArea = document.getElementById('quizArea');
+    const resultBox = document.getElementById('resultBox');
+    const progress = document.getElementById('progress');
+    const qText = document.getElementById('qText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const feedbackArea = document.getElementById('feedbackArea');
+    const translationBox = document.getElementById('translationBox');
+    const arQuestion = document.getElementById('arQuestion');
+    const arOptionsList = document.getElementById('arOptionsList');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function loadQuestion(index) {
+        const q = questions[index];
+        
+        // عرض السؤال بالإنجليزية أولاً + علامة تمييز
+        let prefix = '';
+        if (q.isOriginal) {
+            prefix = '⭐ ';  // نجمة للأسئلة الأصلية من الشيتات
+        } else {
+            prefix = '📝 '; // علامة للأسئلة الإضافية
+        }
+        qText.innerHTML = `${prefix}${index + 1}. ${q.en}`;
+        progress.textContent = `${index + 1} / ${totalQuestions}`;
+
+        // عرض الخيارات بالإنجليزية
+        optionsContainer.innerHTML = '';
+        q.optsEn.forEach((optEn, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'opt';
+            btn.textContent = `${String.fromCharCode(65 + i)}. ${optEn}`; // A, B, C, D
+            btn.dataset.index = i;
+            btn.addEventListener('click', () => handleSelect(i));
+            optionsContainer.appendChild(btn);
+        });
+
+        // إخفاء الترجمة العربية
+        translationBox.style.display = 'none';
+        feedbackArea.className = 'feedback-area';
+        feedbackArea.textContent = '✍️ Choose an answer from above';
+        nextBtn.disabled = true;
+        isAnswered = false;
+
+        if (index === totalQuestions - 1) {
+            nextBtn.textContent = '🏁 Finish Exam';
+        } else {
+            nextBtn.textContent = 'Next ➡️';
+        }
+    }
+
+    function handleSelect(selectedIndex) {
+        if (isAnswered) return;
+        isAnswered = true;
+
+        const q = questions[currentIndex];
+        const allOpts = document.querySelectorAll('.opt');
+        allOpts.forEach(btn => btn.classList.add('disabled-opt'));
+
+        const selectedBtn = allOpts[selectedIndex];
+        const correctBtn = allOpts[q.correct];
+
+        if (selectedIndex === q.correct) {
+            selectedBtn.classList.add('correct');
+            feedbackArea.className = 'feedback-area correct-fb';
+            feedbackArea.textContent = '✅ Correct! Well done.';
+            score++;
+        } else {
+            selectedBtn.classList.add('wrong');
+            correctBtn.classList.add('correct');
+            feedbackArea.className = 'feedback-area wrong-fb';
+            feedbackArea.textContent = `❌ Wrong. The correct answer is: ${q.optsEn[q.correct]}`;
+        }
+
+        // === عرض الترجمة إلى العربية بعد الإجابة ===
+        arQuestion.textContent = `📖 السؤال: ${q.ar}`;
+        arOptionsList.innerHTML = '';
+        q.optsAr.forEach((optAr, i) => {
+            const p = document.createElement('div');
+            p.className = 'ar-opt';
+            const letter = String.fromCharCode(65 + i);
+            p.innerHTML = `<span>${letter}.</span> ${optAr}`;
+            if (i === q.correct) {
+                p.classList.add('correct-ar');
+            } else if (i === selectedIndex && i !== q.correct) {
+                p.classList.add('wrong-ar');
+            }
+            arOptionsList.appendChild(p);
+        });
+        translationBox.style.display = 'block';
+
+        nextBtn.disabled = false;
+    }
+
+    function goToNext() {
+        if (nextBtn.disabled) return;
+        if (currentIndex === totalQuestions - 1) {
+            showResult();
+            return;
+        }
+        currentIndex++;
+        loadQuestion(currentIndex);
+    }
+
+    function showResult() {
+        quizArea.style.display = 'none';
+        resultBox.style.display = 'block';
+        document.getElementById('finalScore').textContent = `${score} / ${totalQuestions}`;
+        const pct = (score / totalQuestions) * 100;
+        let msg = '';
+        if (pct >= 90) msg = '🌟 Excellent! Very high level.';
+        else if (pct >= 70) msg = '💪 Very good! You can improve a few points.';
+        else if (pct >= 50) msg = '📖 Good, but I recommend reviewing the lectures again.';
+        else msg = '📚 You need a thorough review of the material. Re-read the lectures.';
+        document.getElementById('finalMsg').textContent = msg;
+    }
+
+    function restartExam() {
+        currentIndex = 0;
+        score = 0;
+        resultBox.style.display = 'none';
+        quizArea.style.display = 'block';
+        loadQuestion(0);
+    }
+
+    nextBtn.addEventListener('click', goToNext);
+    loadQuestion(0);
+</script>
+
+</body>
+</html>
